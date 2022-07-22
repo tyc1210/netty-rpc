@@ -14,6 +14,8 @@ import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
 import org.springframework.stereotype.Component;
 
+import java.nio.charset.Charset;
+
 /**
  * 类描述
  *
@@ -38,8 +40,11 @@ public class NettyServer {
             .childHandler(new ChannelInitializer<SocketChannel>() {
                 @Override
                 protected void initChannel(SocketChannel ch) throws Exception {
+                    ch.pipeline().addLast(new LengthFieldBasedFrameDecoder(Integer.MAX_VALUE,
+                            0, 4, 0, 4));
                     ch.pipeline().addLast(new StringDecoder());
                     ch.pipeline().addLast(new ServerHandler());
+                    ch.pipeline().addLast(new LengthFieldPrepender(4, false));
                     ch.pipeline().addLast(new StringEncoder());
                 }
             });

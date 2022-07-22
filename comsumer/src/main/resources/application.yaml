@@ -1,0 +1,8 @@
+server:
+  port: 8002
+
+client:
+  host: 127.0.0.1
+  port: 30001
+  timeOut: 1000
+  threadNum: 8
