@@ -3,6 +3,7 @@ package com.tyc.consumer.controller;
 import com.tyc.common.model.User;
 import com.tyc.common.service.UserService;
 import com.tyc.consumer.annotation.RpcReference;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class TestController {
 
     @RpcReference
+    @Autowired
     private UserService userService;
 
     @GetMapping("/user/{id}")

@@ -1,5 +1,8 @@
 package com.tyc.common.model;
 
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
+
 /**
  * 封装请求信息
  *
@@ -12,9 +15,18 @@ public class RpcRequest {
     private String methodName;
     private Object[] args;
     private RequestFuture requestFuture;
+    private static AtomicLong atomicInteger = new AtomicLong(0);
 
     public RpcRequest(Long id, String methodName, Object[] args) {
         this.id = id;
+        this.methodName = methodName;
+        this.args = args;
+        this.requestFuture = new RequestFuture();
+        RequestFuture.rpcRequestMap.put(id,this);
+    }
+
+    public RpcRequest(String methodName, Object[] args) {
+        this.id = atomicInteger.incrementAndGet();
         this.methodName = methodName;
         this.args = args;
         this.requestFuture = new RequestFuture();
