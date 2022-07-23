@@ -1,6 +1,8 @@
-package com.tyc.consumer;
+package com.tyc.consumer.common;
 
+import com.alibaba.fastjson.JSONObject;
 import com.tyc.common.model.RpcRequest;
+import com.tyc.common.model.RpcResult;
 import com.tyc.consumer.client.NettyClient;
 import org.springframework.beans.factory.FactoryBean;
 
@@ -9,7 +11,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
 /**
- * 类描述
+ * 生成代理对象
  *
  * @author tyc
  * @version 1.0
@@ -29,8 +31,10 @@ public class RpcFactoryBean<T> implements FactoryBean<T> {
             @Override
             public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
                 // 调用 netty 客户端发送消息
-                RpcRequest rpcRequest = new RpcRequest(method.getName(),args);
-                return NettyClient.sendRequest(rpcRequest);
+                String classMethodName = new StringBuilder(method.getDeclaringClass().getName()).append(".").append(method.getName()).toString();
+                RpcRequest rpcRequest = new RpcRequest(classMethodName,args);
+                RpcResult rpcResult = NettyClient.sendRequest(rpcRequest);
+                return JSONObject.parseObject(rpcResult.getResultData(),method.getReturnType());
             }
         };
         return (T) Proxy.newProxyInstance(this.getClass().getClassLoader(),new Class[]{aClass},handler);

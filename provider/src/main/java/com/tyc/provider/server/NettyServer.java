@@ -12,6 +12,8 @@ import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import io.netty.handler.codec.LengthFieldPrepender;
 import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.nio.charset.Charset;
@@ -23,9 +25,11 @@ import java.nio.charset.Charset;
  * @version 1.0
  * @date 2022-07-21 11:34:04
  */
+@Slf4j
 @Component("nettyServer")
 public class NettyServer {
-    private Integer port = 8081;
+    @Value("${nettyServer.port}")
+    private Integer port;
     private ChannelFuture future = null;
 
 
@@ -48,6 +52,7 @@ public class NettyServer {
                     ch.pipeline().addLast(new StringEncoder());
                 }
             });
+            log.info("开始启动netty服务,监听端口:{}",port);
             future = bootstrap.bind(port).sync();
             future.channel().closeFuture().sync();
         } catch (InterruptedException e) {

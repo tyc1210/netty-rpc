@@ -1,5 +1,6 @@
 package com.tyc.provider.listener;
 
+import com.alibaba.fastjson.JSONObject;
 import com.tyc.provider.annotation.RpcService;
 import com.tyc.provider.cache.MethodCache;
 import com.tyc.provider.server.NettyServer;
@@ -24,7 +25,6 @@ import java.util.Set;
 public class NettyServerStartListener implements ApplicationListener<ContextRefreshedEvent> {
     @Override
     public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
-        log.info("开始启动netty服务");
         new Thread(()->{
             NettyServer nettyServer = contextRefreshedEvent.getApplicationContext().getBean("nettyServer", NettyServer.class);
             nettyServer.start();
@@ -36,15 +36,17 @@ public class NettyServerStartListener implements ApplicationListener<ContextRefr
         for (Class<?> aClass : classes) {
             String[] beanNames = applicationContext.getBeanNamesForType(aClass);
             for (String beanName : beanNames) {
-                log.info("处理beanName:{},生成代理对象放入缓存",beanName);
+                log.info("获取到需要供远程调用的bean，beanName:{}",beanName);
                 Class<?> classBean = applicationContext.getType(beanName);
                 Method[] methods = classBean.getMethods();
                 for (Method method : methods) {
                     try {
-                        // 返回声明此Method的Class对象
+                        // getDeclaringClass返回声明此Method的Class对象
                         if(method.getDeclaringClass() == aClass){
-                            log.info("获取目标方法名：{}",method.getName());
-                            log.info("测试执行结果",method.invoke(applicationContext.getBean(beanName,aClass),1L));
+                            log.info("将方法：{}，放入到缓存",method.getName());
+                            // 测试方法调用
+//                            Object result = method.invoke(applicationContext.getBean(beanName, aClass), 1L);
+//                            log.info(JSONObject.toJSONString(result));
                             MethodCache.MethodContext methodContext = new MethodCache.MethodContext(method, beanName);
                             String key = new StringBuilder(aClass.getInterfaces()[0].getName()).append(".").append(method.getName()).toString();
                             MethodCache.methodMap.put(key,methodContext);

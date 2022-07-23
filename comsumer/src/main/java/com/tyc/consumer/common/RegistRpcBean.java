@@ -1,4 +1,4 @@
-package com.tyc.consumer;
+package com.tyc.consumer.common;
 
 import com.tyc.consumer.annotation.RpcReference;
 import com.tyc.consumer.util.ScanUtill;
@@ -10,22 +10,19 @@ import org.springframework.beans.factory.support.BeanDefinitionReaderUtils;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 
-import java.util.Map;
 import java.util.Set;
 
 /**
- * 类描述
+ * 注入自定义代理对象
  *
  * @author tyc
  * @version 1.0
  * @date 2022-07-22 14:11:41
  */
 @Component
-public class RegistRpcBean implements BeanDefinitionRegistryPostProcessor, ApplicationContextAware {
+public class RegistRpcBean implements BeanDefinitionRegistryPostProcessor {
     @Override
     public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry beanDefinitionRegistry) throws BeansException {
         // 获取需要代理的类
@@ -44,11 +41,5 @@ public class RegistRpcBean implements BeanDefinitionRegistryPostProcessor, Appli
     @Override
     public void postProcessBeanFactory(ConfigurableListableBeanFactory configurableListableBeanFactory) throws BeansException {
 
-    }
-
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        Map<String, Object> beansWithAnnotation = applicationContext.getBeansWithAnnotation(RpcReference.class);
-        System.out.println(1);
     }
 }

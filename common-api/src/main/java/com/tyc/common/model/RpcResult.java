@@ -8,8 +8,23 @@ package com.tyc.common.model;
  * @date 2022-07-21 18:06:27
  */
 public class RpcResult {
+    private Integer code;
     private Long id;
     private String resultData;
+
+    public RpcResult(Integer code, Long id, String resultData) {
+        this.code = code;
+        this.id = id;
+        this.resultData = resultData;
+    }
+
+    public Integer getCode() {
+        return code;
+    }
+
+    public void setCode(Integer code) {
+        this.code = code;
+    }
 
     public Long getId() {
         return id;

@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class TestController {
 
     @RpcReference
-    @Autowired
     private UserService userService;
 
     @GetMapping("/user/{id}")

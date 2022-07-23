@@ -12,14 +12,14 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 public class RpcRequest {
     private Long id;
-    private String methodName;
+    private String classMethodName;
     private Object[] args;
     private RequestFuture requestFuture;
     private static AtomicLong atomicInteger = new AtomicLong(0);
 
     public RpcRequest(Long id, String methodName, Object[] args) {
         this.id = id;
-        this.methodName = methodName;
+        this.classMethodName = methodName;
         this.args = args;
         this.requestFuture = new RequestFuture();
         RequestFuture.rpcRequestMap.put(id,this);
@@ -27,7 +27,7 @@ public class RpcRequest {
 
     public RpcRequest(String methodName, Object[] args) {
         this.id = atomicInteger.incrementAndGet();
-        this.methodName = methodName;
+        this.classMethodName = methodName;
         this.args = args;
         this.requestFuture = new RequestFuture();
         RequestFuture.rpcRequestMap.put(id,this);
@@ -50,11 +50,11 @@ public class RpcRequest {
     }
 
     public String getMethodName() {
-        return methodName;
+        return classMethodName;
     }
 
     public void setMethodName(String methodName) {
-        this.methodName = methodName;
+        this.classMethodName = methodName;
     }
 
     public Object[] getArgs() {
