@@ -29,6 +29,7 @@ public class NettyServerStartListener implements ApplicationListener<ContextRefr
             NettyServer nettyServer = contextRefreshedEvent.getApplicationContext().getBean("nettyServer", NettyServer.class);
             nettyServer.start();
         }).start();
+
         log.info("扫描服务者提供信息放入缓存，提供根据方法信息调用");
         // 将特定注解的bean 生成代理对象放入缓存 反射调用
         ApplicationContext applicationContext = contextRefreshedEvent.getApplicationContext();

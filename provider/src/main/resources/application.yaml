@@ -1,5 +1,15 @@
 server:
   port: 8001
 
+
 nettyServer:
+  name: rpc-Server
   port: 30001
+  discoveryIp: 10.1.20.124
+  nacos:
+    addr: 127.0.0.1:8848
+    username: nacos
+    password: nacosdev
+
+
+

@@ -6,3 +6,8 @@ client:
   port: 30001
   timeOut: 1000
   threadNum: 8
+  serviceName: rpc-Server
+  nacos:
+    addr: 127.0.0.1:8848
+    username: nacos
+    password: nacosdev

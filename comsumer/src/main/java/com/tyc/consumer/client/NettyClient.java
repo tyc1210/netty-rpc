@@ -1,10 +1,12 @@
 package com.tyc.consumer.client;
 
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.nacos.api.naming.pojo.Instance;
 import com.tyc.common.model.RequestFuture;
 import com.tyc.common.model.RpcRequest;
 import com.tyc.common.model.RpcResult;
 import com.tyc.consumer.handler.ClientHandler;
+import com.tyc.consumer.nacos.NacosTemplate;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.ChannelFuture;
@@ -16,6 +18,8 @@ import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import io.netty.handler.codec.LengthFieldPrepender;
 import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -39,13 +43,31 @@ public class NettyClient {
     private Bootstrap bootstrap;
     private static ChannelFuture channelFuture;
 
+    @Value("${client.serviceName}")
+    private String serviceName;
+
+    @Autowired
+    private NacosTemplate nacosTemplate;
+
 
     public void start(){
         try {
+            getInstance();
             init();
             channelFuture = bootstrap.connect(host, port).sync();
         } catch (InterruptedException e) {
             e.printStackTrace();
+        }
+    }
+
+    /**
+     * 从配置中心获取实例
+     */
+    void getInstance(){
+        Instance instance = nacosTemplate.getOneHealthyInstance(serviceName);
+        if(StringUtils.isNotBlank(instance.getIp()) && instance.getPort() != 0){
+            host = instance.getIp();
+            port = instance.getPort();
         }
     }
 

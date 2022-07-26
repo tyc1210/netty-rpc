@@ -1,6 +1,9 @@
 package com.tyc.provider.server;
 
+import com.alibaba.nacos.api.naming.pojo.Instance;
+import com.tyc.provider.config.NacosConfigProperties;
 import com.tyc.provider.handler.ServerHandler;
+import com.tyc.provider.nacos.NacosTemplate;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -13,6 +16,7 @@ import io.netty.handler.codec.LengthFieldPrepender;
 import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -30,7 +34,32 @@ import java.nio.charset.Charset;
 public class NettyServer {
     @Value("${nettyServer.port}")
     private Integer port;
+
+    @Value("${nettyServer.discoveryIp}")
+    private String discoveryIp;
+
+    @Value("${nettyServer.name}")
+    private String serviceName;
+
     private ChannelFuture future = null;
+
+    @Autowired
+    private NacosTemplate nacosTemplate;
+
+    @Autowired
+    private NacosConfigProperties nacosConfigProperties;
+
+    public void register(){
+        Instance instance = new Instance();
+        instance.setServiceName(serviceName);
+        instance.setIp(discoveryIp);
+        instance.setPort(port);
+        try {
+            nacosTemplate.registerServer(instance);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
 
     public void start() {
@@ -52,7 +81,8 @@ public class NettyServer {
                     ch.pipeline().addLast(new StringEncoder());
                 }
             });
-            log.info("开始启动netty服务,监听端口:{}",port);
+            log.info("启动netty服务,监听端口:{}",port);
+            register();
             future = bootstrap.bind(port).sync();
             future.channel().closeFuture().sync();
         } catch (InterruptedException e) {
