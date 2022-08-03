@@ -93,6 +93,7 @@ public class NettyClient {
         });
     }
 
+    // todo 创建客户端连接池 提高吞吐量
     public static RpcResult sendRequest(RpcRequest request){
 //        RpcRequest rpcRequest = new RpcRequest();
 //        rpcRequest.setId(1L);
