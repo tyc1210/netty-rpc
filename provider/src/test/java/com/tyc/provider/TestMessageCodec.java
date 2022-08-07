@@ -2,6 +2,7 @@ package com.tyc.provider;
 
 import com.alibaba.fastjson.JSONObject;
 import com.tyc.common.model.Message;
+import com.tyc.common.model.RpcRequest;
 import com.tyc.common.model.SerializeType;
 import com.tyc.provider.codec.MessageCodec;
 import com.tyc.provider.util.LogUtil;
@@ -30,7 +31,7 @@ public class TestMessageCodec {
                 new LoggingHandler(LogLevel.DEBUG)
         );
 
-        Message message = new Message("test");
+        Message message = new RpcRequest("1",new Object[2]);
         ByteBuf buffer = encode(message);
         int size = buffer.readableBytes();
         // 测试解码 半包发送

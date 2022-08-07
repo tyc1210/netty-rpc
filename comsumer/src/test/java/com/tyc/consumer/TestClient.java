@@ -1,10 +1,10 @@
-package com.tyc.consumer.client;
+package com.tyc.consumer;
 
 import com.alibaba.fastjson.JSONObject;
-import com.tyc.common.model.RequestFuture;
 import com.tyc.common.model.RpcRequest;
 import com.tyc.common.model.RpcResult;
-import com.tyc.consumer.handler.ClientHandler;
+import com.tyc.consumer.codec.MessageCodec;
+import com.tyc.consumer.handler.RpcResultHandler;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.ChannelFuture;
@@ -12,10 +12,8 @@ import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
-import io.netty.handler.codec.LengthFieldPrepender;
-import io.netty.handler.codec.string.StringDecoder;
-import io.netty.handler.codec.string.StringEncoder;
+import io.netty.handler.logging.LogLevel;
+import io.netty.handler.logging.LoggingHandler;
 
 public class TestClient {
 
@@ -36,22 +34,19 @@ public class TestClient {
     }
 
     private void init(){
+        LoggingHandler loggingHandler = new LoggingHandler(LogLevel.DEBUG);
         NioEventLoopGroup loopGroup = new NioEventLoopGroup(threadNum);
         bootstrap = new Bootstrap();
         bootstrap.group(loopGroup);
         bootstrap.channel(NioSocketChannel.class);
         bootstrap.option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT);
-        final ClientHandler handler = new ClientHandler();
         bootstrap .handler(new ChannelInitializer<NioSocketChannel>() {
             @Override
             protected void initChannel(NioSocketChannel ch)
                     throws Exception {
-                ch.pipeline().addLast(new LengthFieldBasedFrameDecoder(Integer.MAX_VALUE,
-                        0, 4, 0, 4));
-                ch.pipeline().addLast(new StringDecoder());
-                ch.pipeline().addLast(handler);
-                ch.pipeline().addLast(new LengthFieldPrepender(4, false));
-                ch.pipeline().addLast(new StringEncoder());
+                ch.pipeline().addLast(loggingHandler);
+                ch.pipeline().addLast(new MessageCodec());
+                ch.pipeline().addLast(new RpcResultHandler());
             }
         });
     }
@@ -70,6 +65,8 @@ public class TestClient {
         client.start();
         Object[] arg = new Object[]{1L};
         RpcRequest rpcRequest = new RpcRequest("com.tyc.common.service.UserService.getUserById",arg);
-        channelFuture.channel().writeAndFlush(JSONObject.toJSONString(rpcRequest));
+//        channelFuture.channel().writeAndFlush(JSONObject.toJSONString(rpcRequest));
+        channelFuture.channel().writeAndFlush(rpcRequest);
+        System.out.println();
     }
 }

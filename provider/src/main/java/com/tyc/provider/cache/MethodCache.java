@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * 类描述
+ * 缓存暴露给外部调用的方法
  *
  * @author tyc
  * @version 1.0

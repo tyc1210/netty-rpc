@@ -7,12 +7,12 @@ package com.tyc.common.model;
  * @version 1.0
  * @date 2022-07-21 18:06:27
  */
-public class RpcResult {
+public class RpcResult extends Message{
     private Integer code;
-    private Long id;
+    private Integer id;
     private String resultData;
 
-    public RpcResult(Integer code, Long id, String resultData) {
+    public RpcResult(Integer code, Integer id, String resultData) {
         this.code = code;
         this.id = id;
         this.resultData = resultData;
@@ -26,11 +26,11 @@ public class RpcResult {
         this.code = code;
     }
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -40,5 +40,17 @@ public class RpcResult {
 
     public void setResultData(String resultData) {
         this.resultData = resultData;
+    }
+
+    public SerializeType getSerializeType() {
+        return SerializeType.JSON;
+    }
+
+    public MessageType getMessageType() {
+        return MessageType.RESPONSE;
+    }
+
+    public Integer getMessageId() {
+        return this.id;
     }
 }

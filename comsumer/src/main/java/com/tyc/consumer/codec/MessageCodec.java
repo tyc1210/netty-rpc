@@ -1,15 +1,14 @@
-package com.tyc.provider.codec;
+package com.tyc.consumer.codec;
 
 import com.alibaba.fastjson.JSONObject;
 import com.tyc.common.model.*;
-import com.tyc.provider.util.LogUtil;
+import com.tyc.consumer.util.LogUtil;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageCodec;
 import lombok.extern.slf4j.Slf4j;
 
-import java.awt.*;
 import java.util.List;
 
 /**
@@ -28,7 +27,6 @@ import java.util.List;
  * @date 2022-08-03 14:51:30
  */
 @Slf4j
-@ChannelHandler.Sharable
 public class MessageCodec extends MessageToMessageCodec<ByteBuf, Message> {
 
     @Override
@@ -48,11 +46,16 @@ public class MessageCodec extends MessageToMessageCodec<ByteBuf, Message> {
         buffer.writeBytes(new byte[2]);
         // 消息id
         buffer.writeInt(msg.getMessageId());
-        byte[] msgBytes = JSONObject.toJSONString(msg).getBytes();
-        // 写入长度
-        buffer.writeInt(msgBytes.length);
-        // 写入数据
-        buffer.writeBytes(msgBytes);
+        // 根据序列化方式选择不同处理方式
+        if(msg.getSerializeType().getCode() == 0){
+            byte[] msgBytes = JSONObject.toJSONString(msg).getBytes();
+            // 写入长度
+            buffer.writeInt(msgBytes.length);
+            // 写入数据
+            buffer.writeBytes(msgBytes);
+        }else {
+         log.error("不支持的序列化方式");
+        }
         // 校验字段存放某种校验算法计算报文校验码，校验码用于验证报文的正确性。
 //        buffer.writeBytes(new byte[2]);
         log.info("MessageCodec encode result");
@@ -73,13 +76,17 @@ public class MessageCodec extends MessageToMessageCodec<ByteBuf, Message> {
         int length = byteBuf.readInt();
         byte[] data = new byte[length];
         byteBuf.readBytes(data);
+        if(MessageType.RESPONSE.getCode() != packetType){
+            log.error("无效的响应类型:",packetType);
+            return;
+        }
         Message message = null;
-        if(serializeType == SerializeType.JSON.getCode() && packetType == MessageType.REQUEST.getCode()){
-            message = JSONObject.parseObject(new String(data), RpcRequest.class);
-        }else if(serializeType == SerializeType.JSON.getCode() && packetType == MessageType.PING.getCode()){
-            message = JSONObject.parseObject(new String(data), PingMessage.class);
+        if(SerializeType.JSON.getCode() == serializeType && packetType == MessageType.RESPONSE.getCode()){
+            message = JSONObject.parseObject(new String(data), RpcResult.class);
+        }else if(SerializeType.JSON.getCode() == serializeType && packetType == MessageType.PONG.getCode()){
+            message = JSONObject.parseObject(new String(data), PongMessage.class);
         }else {
-            log.error("无效类型");
+            log.error("无效的系列化方式");
             return;
         }
         log.info("解码结果===> 魔数:{},协议版本:{},序列化方式:{},报文类型:{},状态:{},消息id:{},消息长度:{},消息：{}"

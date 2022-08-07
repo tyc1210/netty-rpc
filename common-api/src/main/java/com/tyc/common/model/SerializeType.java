@@ -8,12 +8,12 @@ package com.tyc.common.model;
  * @date 2022-08-03 15:02:34
  */
 public enum SerializeType {
-    JSON("JSON",0);
+    JSON("JSON",(byte)0);
 
     private String msg;
-    private Integer code;
+    private Byte code;
 
-    SerializeType(String msg, Integer code) {
+    SerializeType(String msg, Byte code) {
         this.msg = msg;
         this.code = code;
     }
@@ -23,7 +23,7 @@ public enum SerializeType {
     }
 
 
-    public Integer getCode() {
+    public Byte getCode() {
         return code;
     }
 }

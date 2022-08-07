@@ -16,7 +16,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * @date 2022-07-22 10:34:33
  */
 public class RequestFuture {
-    public static Map<Long,RpcRequest> rpcRequestMap = new ConcurrentHashMap<Long, RpcRequest>();
+    public static Map<Integer,RpcRequest> rpcRequestMap = new ConcurrentHashMap<Integer, RpcRequest>();
     public static Long timeOut = 500L;
     private volatile RpcResult rpcResult;
     // 结果是否到来

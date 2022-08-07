@@ -10,14 +10,14 @@ import java.util.concurrent.atomic.AtomicLong;
  * @version 1.0
  * @date 2022-07-21 17:57:24
  */
-public class RpcRequest {
-    private Long id;
+public class RpcRequest extends Message{
+    private Integer id;
     private String classMethodName;
     private Object[] args;
     private RequestFuture requestFuture;
-    private static AtomicLong atomicInteger = new AtomicLong(0);
+    private static AtomicInteger atomicInteger = new AtomicInteger(0);
 
-    public RpcRequest(Long id, String methodName, Object[] args) {
+    public RpcRequest(Integer id, String methodName, Object[] args) {
         this.id = id;
         this.classMethodName = methodName;
         this.args = args;
@@ -41,11 +41,11 @@ public class RpcRequest {
         this.requestFuture = requestFuture;
     }
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -63,5 +63,17 @@ public class RpcRequest {
 
     public void setArgs(Object[] args) {
         this.args = args;
+    }
+
+    public SerializeType getSerializeType() {
+        return SerializeType.JSON;
+    }
+
+    public MessageType getMessageType() {
+        return MessageType.REQUEST;
+    }
+
+    public Integer getMessageId() {
+        return this.id;
     }
 }

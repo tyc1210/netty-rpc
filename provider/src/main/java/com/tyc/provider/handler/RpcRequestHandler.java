@@ -8,28 +8,19 @@ import com.tyc.provider.cache.MethodCache;
 import com.tyc.provider.util.BeanUtils;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.channel.SimpleChannelInboundHandler;
 import lombok.extern.slf4j.Slf4j;
-
 import java.lang.reflect.Method;
 import java.util.List;
 
 /**
- * 类描述
- *
- * @author tyc
- * @version 1.0
- * @date 2022-07-21 11:38:17
+ * 专门处理 RpcRequest 类型的消息
  */
-@ChannelHandler.Sharable
 @Slf4j
-public class ServerHandler extends ChannelInboundHandlerAdapter {
-
+@ChannelHandler.Sharable
+public class RpcRequestHandler extends SimpleChannelInboundHandler<RpcRequest> {
     @Override
-    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        log.info("请求信息为：{}",msg.toString());
-        // 将请求解析
-        RpcRequest rpcRequest = JSONObject.parseObject(msg.toString(), RpcRequest.class);
+    protected void channelRead0(ChannelHandlerContext ctx, RpcRequest rpcRequest) throws Exception {
         String methodName = rpcRequest.getMethodName();
         MethodCache.MethodContext methodContext = MethodCache.methodMap.get(methodName);
         if(null == methodContext){
@@ -55,9 +46,8 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
         Object obj = methodContext.getMethod().invoke(BeanUtils.getBeanByName(methodContext.getBeanName()), params);
         String data = JSONObject.toJSONString(obj);
         RpcResult rpcResult = new RpcResult(0,rpcRequest.getId(),data);
-        String result = JSONObject.toJSONString(rpcResult);
-        log.info("返回客户端执行结果:{}",result);
-//        ctx.writeAndFlush(result);
-        ctx.channel().write(result);
-        ctx.channel().unsafe().flush();    }
+        log.info("返回客户端执行结果:{}",JSONObject.toJSONString(rpcResult));
+        ctx.channel().write(rpcResult);
+        ctx.channel().unsafe().flush();
+    }
 }

@@ -17,7 +17,6 @@ public class NettyClientListener implements ApplicationListener<ContextRefreshed
     @Override
     public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
         NettyClient nettyClient = contextRefreshedEvent.getApplicationContext().getBean("nettyClient", NettyClient.class);
-        log.info("开启客户端连接");
         nettyClient.start();
     }
 }
