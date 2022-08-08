@@ -1,7 +1,8 @@
 package com.tyc.provider.codec;
 
-import com.alibaba.fastjson.JSONObject;
-import com.tyc.common.model.*;
+import com.tyc.common.model.Message;
+import com.tyc.common.model.MessageType;
+import com.tyc.common.serialize.SerializeStrategyContext;
 import com.tyc.provider.util.LogUtil;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandler;
@@ -9,8 +10,8 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageCodec;
 import lombok.extern.slf4j.Slf4j;
 
-import java.awt.*;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * 自定义协议
@@ -48,13 +49,17 @@ public class MessageCodec extends MessageToMessageCodec<ByteBuf, Message> {
         buffer.writeBytes(new byte[2]);
         // 消息id
         buffer.writeInt(msg.getMessageId());
-        byte[] msgBytes = JSONObject.toJSONString(msg).getBytes();
+        // 根据序列化方式选择不同处理方式
+        SerializeStrategyContext serializeStrategyContext = new SerializeStrategyContext(msg.getSerializeType().getCode());
+        byte[] msgBytes = serializeStrategyContext.serialize(msg);
+        if(Objects.isNull(msgBytes)){
+            log.warn("无效的序列化方式：{}",msg.getSerializeType().getMsg());
+            return;
+        }
         // 写入长度
         buffer.writeInt(msgBytes.length);
         // 写入数据
         buffer.writeBytes(msgBytes);
-        // 校验字段存放某种校验算法计算报文校验码，校验码用于验证报文的正确性。
-//        buffer.writeBytes(new byte[2]);
         log.info("MessageCodec encode result");
         LogUtil.log(buffer);
         out.add(buffer);
@@ -66,24 +71,21 @@ public class MessageCodec extends MessageToMessageCodec<ByteBuf, Message> {
         byteBuf.readBytes(magicNum);
         byte protocolVersion = byteBuf.readByte();
         byte serializeType = byteBuf.readByte();
-        byte packetType = byteBuf.readByte();
+        byte messageType = byteBuf.readByte();
         byte state = byteBuf.readByte();
         byteBuf.readBytes(2);
         int id = byteBuf.readInt();
         int length = byteBuf.readInt();
         byte[] data = new byte[length];
         byteBuf.readBytes(data);
-        Message message = null;
-        if(serializeType == SerializeType.JSON.getCode() && packetType == MessageType.REQUEST.getCode()){
-            message = JSONObject.parseObject(new String(data), RpcRequest.class);
-        }else if(serializeType == SerializeType.JSON.getCode() && packetType == MessageType.PING.getCode()){
-            message = JSONObject.parseObject(new String(data), PingMessage.class);
-        }else {
-            log.error("无效类型");
+        SerializeStrategyContext serializeStrategyContext = new SerializeStrategyContext(serializeType);
+        Message message = serializeStrategyContext.deSerialize(data, MessageType.getByCode(messageType));
+        if(Objects.isNull(message)){
+            log.warn("无效的序列化方式:{}",serializeType);
             return;
         }
         log.info("解码结果===> 魔数:{},协议版本:{},序列化方式:{},报文类型:{},状态:{},消息id:{},消息长度:{},消息：{}"
-                ,new String(magicNum),protocolVersion,serializeType,packetType,state,id,length,message.toString());
+                ,new String(magicNum),protocolVersion,serializeType,message,state,id,length,message.toString());
         out.add(message);
     }
 }

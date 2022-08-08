@@ -11,5 +11,10 @@ nettyServer:
     username: nacos
     password: nacosdev
 
+logging:
+  level:
+    com:
+      tyc:
+        provider: DEBUG
 
 

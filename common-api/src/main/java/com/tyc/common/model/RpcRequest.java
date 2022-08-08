@@ -1,7 +1,6 @@
 package com.tyc.common.model;
 
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * 封装请求信息
@@ -25,6 +24,7 @@ public class RpcRequest extends Message{
         RequestFuture.rpcRequestMap.put(id,this);
     }
 
+    // todo id生成规则改造 当前仅为测试
     public RpcRequest(String methodName, Object[] args) {
         this.id = atomicInteger.incrementAndGet();
         this.classMethodName = methodName;
@@ -65,14 +65,17 @@ public class RpcRequest extends Message{
         this.args = args;
     }
 
+    @Override
     public SerializeType getSerializeType() {
         return SerializeType.JSON;
     }
 
+    @Override
     public MessageType getMessageType() {
         return MessageType.REQUEST;
     }
 
+    @Override
     public Integer getMessageId() {
         return this.id;
     }

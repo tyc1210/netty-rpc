@@ -20,4 +20,29 @@ public enum  MessageType {
     MessageType(String msg) {
         this.msg = msg;
     }
+
+    public static Class getClass(MessageType type){
+        switch (type){
+            case REQUEST:
+                return RpcRequest.class;
+            case RESPONSE:
+                return RpcResult.class;
+            case PING:
+                return PingMessage.class;
+            case PONG:
+                return PongMessage.class;
+            default:
+                return null;
+        }
+    }
+
+    public static MessageType getByCode(Byte code){
+        MessageType[] values = MessageType.values();
+        for (MessageType value : values) {
+            if(value.getCode().equals(code)){
+                return value;
+            }
+        }
+        return null;
+    }
 }

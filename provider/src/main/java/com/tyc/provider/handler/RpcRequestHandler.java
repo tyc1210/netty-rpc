@@ -24,7 +24,8 @@ public class RpcRequestHandler extends SimpleChannelInboundHandler<RpcRequest> {
         String methodName = rpcRequest.getMethodName();
         MethodCache.MethodContext methodContext = MethodCache.methodMap.get(methodName);
         if(null == methodContext){
-            throw new RuntimeException("no such method");
+            log.warn("请求方法不存在或未暴露:{}",methodName);
+            return;
         }
         Method method = methodContext.getMethod();
         Object[] rpcRequestArgs = rpcRequest.getArgs();
@@ -46,7 +47,7 @@ public class RpcRequestHandler extends SimpleChannelInboundHandler<RpcRequest> {
         Object obj = methodContext.getMethod().invoke(BeanUtils.getBeanByName(methodContext.getBeanName()), params);
         String data = JSONObject.toJSONString(obj);
         RpcResult rpcResult = new RpcResult(0,rpcRequest.getId(),data);
-        log.info("返回客户端执行结果:{}",JSONObject.toJSONString(rpcResult));
+        log.debug("返回客户端执行结果:{}",JSONObject.toJSONString(rpcResult));
         ctx.channel().write(rpcResult);
         ctx.channel().unsafe().flush();
     }

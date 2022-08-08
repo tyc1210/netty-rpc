@@ -42,14 +42,17 @@ public class RpcResult extends Message{
         this.resultData = resultData;
     }
 
+    @Override
     public SerializeType getSerializeType() {
         return SerializeType.JSON;
     }
 
+    @Override
     public MessageType getMessageType() {
         return MessageType.RESPONSE;
     }
 
+    @Override
     public Integer getMessageId() {
         return this.id;
     }

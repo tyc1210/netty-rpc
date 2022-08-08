@@ -91,7 +91,6 @@ public class NettyClient {
         LoggingHandler loggingHandler = new LoggingHandler(LogLevel.DEBUG);
         MessageCodec messageCodec = new MessageCodec();
         RpcResultHandler rpcResultHandler = new RpcResultHandler();
-        QuitHandler quitHandler = new QuitHandler();
 
         bootstrap .handler(new ChannelInitializer<NioSocketChannel>() {
             @Override
@@ -111,7 +110,7 @@ public class NettyClient {
                         }
                     }
                 });
-                ch.pipeline().addLast(quitHandler);
+                ch.pipeline().addLast(new QuitHandler());
                 ch.pipeline().addLast(rpcResultHandler);
             }
         });

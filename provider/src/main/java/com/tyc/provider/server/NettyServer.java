@@ -70,8 +70,6 @@ public class NettyServer {
         MessageCodec messageCodec = new MessageCodec();
         // 处理消息类型为RpcRequest的handler
         RpcRequestHandler rpcRequestHandler = new RpcRequestHandler();
-        // 连接断开
-        QuitHandler quitHandler = new QuitHandler();
         try {
             bootstrap.group(bossGroup,workerGroup);
             bootstrap.channel(NioServerSocketChannel.class);
@@ -101,7 +99,8 @@ public class NettyServer {
                             }
                         }
                     });
-                    ch.pipeline().addLast(quitHandler);
+                    // 处理连接断开
+                    ch.pipeline().addLast(new QuitHandler());
                     ch.pipeline().addLast(rpcRequestHandler);
                 }
             });

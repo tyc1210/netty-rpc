@@ -30,21 +30,21 @@ public class NettyServerStartListener implements ApplicationListener<ContextRefr
             nettyServer.start();
         }).start();
 
-        log.info("扫描服务者提供信息放入缓存，提供根据方法信息调用");
+        log.debug("扫描需要暴露的方法放入缓存");
         // 将特定注解的bean 生成代理对象放入缓存 反射调用
         ApplicationContext applicationContext = contextRefreshedEvent.getApplicationContext();
         Set<Class<?>> classes = ScanUtill.scanAnnotation("com.tyc.provider", RpcService.class);
         for (Class<?> aClass : classes) {
             String[] beanNames = applicationContext.getBeanNamesForType(aClass);
             for (String beanName : beanNames) {
-                log.info("获取到需要供远程调用的bean，beanName:{}",beanName);
+                log.debug("获取到需要供远程调用的bean，beanName:{}",beanName);
                 Class<?> classBean = applicationContext.getType(beanName);
                 Method[] methods = classBean.getMethods();
                 for (Method method : methods) {
                     try {
                         // getDeclaringClass返回声明此Method的Class对象
                         if(method.getDeclaringClass() == aClass){
-                            log.info("将方法：{}，放入到缓存",method.getName());
+                            log.debug("目标方法：{}，放入到缓存",method.getName());
                             // 测试方法调用
 //                            Object result = method.invoke(applicationContext.getBean(beanName, aClass), 1L);
 //                            log.info(JSONObject.toJSONString(result));

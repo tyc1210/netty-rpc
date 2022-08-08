@@ -3,10 +3,8 @@ package com.tyc.consumer.codec;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 
 /**
- * /**
- *  * 利用 netty 的LengthFieldBasedFrameDecoder 处理粘包、半包
+ * 利用 netty 的LengthFieldBasedFrameDecoder 处理粘包、半包
 */
-
 public class DefaultLengthFieldBasedFrameDecoder extends LengthFieldBasedFrameDecoder {
     public DefaultLengthFieldBasedFrameDecoder(){
         this(1024,12,4,0,0);
