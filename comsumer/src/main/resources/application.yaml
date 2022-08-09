@@ -4,9 +4,9 @@ server:
 client:
   host: 127.0.0.1
   port: 30001
-  timeOut: 1000
   threadNum: 8
   serviceName: rpc-Server
+  scanPath: com.tyc.consumer
   nacos:
     addr: 127.0.0.1:8848
     username: nacos

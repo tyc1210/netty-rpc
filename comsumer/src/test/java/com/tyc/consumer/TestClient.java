@@ -56,17 +56,18 @@ public class TestClient {
 //        rpcRequest.setId(1L);
 //        rpcRequest.setMethodName("com.tyc.common.service.UserService.getUserById");
 //        rpcRequest.setArgs(new Object[]{1L});
-        channelFuture.channel().writeAndFlush(JSONObject.toJSONString(request));
-        return request.getRequestFuture().get();
+//        channelFuture.channel().writeAndFlush(JSONObject.toJSONString(request));
+//        return request.getRequestFuture().get();
+        return null;
     }
 
     public static void main(String[] args) {
-        TestClient client = new TestClient();
-        client.start();
-        Object[] arg = new Object[]{1L};
-        RpcRequest rpcRequest = new RpcRequest("com.tyc.common.service.UserService.getUserById",arg);
-//        channelFuture.channel().writeAndFlush(JSONObject.toJSONString(rpcRequest));
-        channelFuture.channel().writeAndFlush(rpcRequest);
-        System.out.println();
+//        TestClient client = new TestClient();
+//        client.start();
+//        Object[] arg = new Object[]{1L};
+//        RpcRequest rpcRequest = new RpcRequest("com.tyc.common.service.UserService.getUserById",arg);
+////        channelFuture.channel().writeAndFlush(JSONObject.toJSONString(rpcRequest));
+//        channelFuture.channel().writeAndFlush(rpcRequest);
+//        System.out.println();
     }
 }

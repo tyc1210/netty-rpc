@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * 类描述
+ * 测试
  *
  * @author tyc
  * @version 1.0

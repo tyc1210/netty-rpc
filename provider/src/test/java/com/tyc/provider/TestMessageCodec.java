@@ -31,7 +31,7 @@ public class TestMessageCodec {
                 new LoggingHandler(LogLevel.DEBUG)
         );
 
-        Message message = new RpcRequest("1",new Object[2]);
+        Message message = new RpcRequest(1,"1",new Object[2]);
         ByteBuf buffer = encode(message);
         int size = buffer.readableBytes();
         // 测试解码 半包发送

@@ -1,5 +1,6 @@
 package com.tyc.consumer;
 
+import com.tyc.consumer.listener.EnvironmentInitedListener;
 import com.tyc.consumer.listener.NettyClientListener;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -15,6 +16,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class ConsumerApplication {
     public static void main(String[] args) {
         SpringApplication application = new SpringApplication(ConsumerApplication.class);
+        application.addListeners(new EnvironmentInitedListener());
         application.addListeners(new NettyClientListener());
         application.run(args);
     }

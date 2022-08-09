@@ -4,7 +4,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufUtil;
 
 /**
- * 类描述
+ * 打印ByteBuf工具类
  *
  * @author tyc
  * @version 1.0

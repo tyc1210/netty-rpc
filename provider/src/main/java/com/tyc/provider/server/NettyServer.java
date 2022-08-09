@@ -4,6 +4,7 @@ import com.alibaba.nacos.api.naming.pojo.Instance;
 import com.tyc.provider.codec.DefaultLengthFieldBasedFrameDecoder;
 import com.tyc.provider.codec.MessageCodec;
 import com.tyc.provider.config.NacosConfigProperties;
+import com.tyc.provider.handler.PingHandler;
 import com.tyc.provider.handler.QuitHandler;
 import com.tyc.provider.handler.RpcRequestHandler;
 import com.tyc.provider.nacos.NacosTemplate;
@@ -100,6 +101,7 @@ public class NettyServer {
                         }
                     });
                     // 处理连接断开
+                    ch.pipeline().addLast(new PingHandler());
                     ch.pipeline().addLast(new QuitHandler());
                     ch.pipeline().addLast(rpcRequestHandler);
                 }

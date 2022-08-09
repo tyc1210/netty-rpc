@@ -1,6 +1,5 @@
 package com.tyc.consumer.codec;
 
-import com.alibaba.fastjson.JSONObject;
 import com.tyc.common.model.*;
 import com.tyc.common.serialize.SerializeStrategyContext;
 import com.tyc.consumer.util.LogUtil;
@@ -14,8 +13,8 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * 自定义协议
- * /*
+ * 自定义协议 处理编解码
+ *
  * +---------------------------------------------------------------+
  * | 魔数 2byte | 协议版本号 1byte | 序列化算法 1byte | 报文类型 1byte  |
  * +---------------------------------------------------------------+

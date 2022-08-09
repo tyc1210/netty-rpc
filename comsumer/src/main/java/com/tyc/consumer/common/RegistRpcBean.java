@@ -4,6 +4,7 @@ import com.tyc.consumer.annotation.RpcReference;
 import com.tyc.consumer.util.ScanUtill;
 import com.tyc.consumer.util.StringUtil;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionReaderUtils;
@@ -15,7 +16,7 @@ import org.springframework.stereotype.Component;
 import java.util.Set;
 
 /**
- * 注入自定义代理对象
+ * 注入自定义代理对象注入Spring容器
  *
  * @author tyc
  * @version 1.0
@@ -23,10 +24,11 @@ import java.util.Set;
  */
 @Component
 public class RegistRpcBean implements BeanDefinitionRegistryPostProcessor {
+    public static String scanPath;
+
     @Override
     public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry beanDefinitionRegistry) throws BeansException {
         // 获取需要代理的类
-        String scanPath = "com.tyc.consumer";
         Set<Class<?>> classes = ScanUtill.scanAnnotationField(scanPath, RpcReference.class);
         // 开始注入
         for (Class<?> aClass : classes) {

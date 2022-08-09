@@ -17,7 +17,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * 类描述
+ * 扫描特定 bin
  *
  * @author tyc
  * @version 1.0

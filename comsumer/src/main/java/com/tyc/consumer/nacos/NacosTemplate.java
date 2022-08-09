@@ -7,7 +7,9 @@ import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.api.naming.NamingService;
 import com.alibaba.nacos.api.naming.listener.NamingEvent;
 import com.alibaba.nacos.api.naming.pojo.Instance;
+import com.tyc.consumer.client.RpcClientManager;
 import com.tyc.consumer.config.NacosConfigProperties;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,9 +27,14 @@ import java.util.concurrent.ConcurrentHashMap;
  * @date 2022-07-26 16:06:59
  */
 @Component
+@Slf4j
 public class NacosTemplate implements InitializingBean {
     @Autowired
     private NacosConfigProperties nacosConfigProperties;
+
+    @Autowired
+    private RpcClientManager rpcClientManager;
+
     // 配置管理
     private ConfigService configService;
     // 服务管理
@@ -48,13 +55,14 @@ public class NacosTemplate implements InitializingBean {
             namingService = NacosFactory.createNamingService(properties);
             namingService.subscribe(serviceName,(event)->{
                 if(event instanceof NamingEvent){
-                    // todo 服务发生变化重新选择新的服务端进行连接
                     List<Instance> instances = ((NamingEvent) event).getInstances();
                     if(instances.isEmpty()){
-                        throw new RuntimeException("无可用服务端");
-                    }
-                    for (Instance instance : instances) {
-
+                        log.error("无可用服务");
+                    }else {
+                        // todo 监测获取到instance若与当前的不一致 主动断开连接 重新连接
+                        if(RpcClientManager.channel == null || !RpcClientManager.channel.isActive()){
+                            rpcClientManager.getChannel();
+                        }
                     }
                 }
             });

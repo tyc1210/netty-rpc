@@ -1,6 +1,5 @@
 package com.tyc.provider.listener;
 
-import com.alibaba.fastjson.JSONObject;
 import com.tyc.provider.annotation.RpcService;
 import com.tyc.provider.cache.MethodCache;
 import com.tyc.provider.server.NettyServer;
@@ -9,8 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
-
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Set;
 
@@ -33,7 +30,8 @@ public class NettyServerStartListener implements ApplicationListener<ContextRefr
         log.debug("扫描需要暴露的方法放入缓存");
         // 将特定注解的bean 生成代理对象放入缓存 反射调用
         ApplicationContext applicationContext = contextRefreshedEvent.getApplicationContext();
-        Set<Class<?>> classes = ScanUtill.scanAnnotation("com.tyc.provider", RpcService.class);
+        String scanPath = applicationContext.getEnvironment().getProperty("nettyServer.scanPath");
+        Set<Class<?>> classes = ScanUtill.scanAnnotation(scanPath, RpcService.class);
         for (Class<?> aClass : classes) {
             String[] beanNames = applicationContext.getBeanNamesForType(aClass);
             for (String beanName : beanNames) {
