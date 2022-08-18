@@ -1,0 +1,4 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+com.tyc.trpc.TrpcAutoConfiguration
+
+org.springframework.context.ApplicationListener=\
